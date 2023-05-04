@@ -14,7 +14,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "mariosimao/notion-sdk-php": "^0.6.2",
+        "mariosimao/notion-sdk-php": "^1.7.0",
         "socialiteproviders/notion": "^4.0"
     },
     "require-dev": {
