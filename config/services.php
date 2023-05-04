@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'notion' => [
+        'client_id' => env('NOTION_CLIENT_ID'),
+        'client_secret' => env('NOTION_CLIENT_SECRET'),
+        'redirect' => env('NOTION_REDIRECT_URI')
+    ],
+
 ];
