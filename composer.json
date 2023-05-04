@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "bezhansalleh/filament-shield": "^2.4",
+        "creagia/filament-code-field": "^1.0",
         "filament/filament": "^2.0",
         "filament/forms": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
