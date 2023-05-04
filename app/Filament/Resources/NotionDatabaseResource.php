@@ -17,7 +17,16 @@ class NotionDatabaseResource extends Resource
 {
     protected static ?string $model = NotionDatabase::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-sparkles';
+
+    protected static ?string $navigationGroup = 'Notion';
+
+    protected static ?int $navigationSort = 1;
+
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -31,16 +40,25 @@ class NotionDatabaseResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Database Tile')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_time')
+                    ->label('Created Time')
+                    ->date('F j, Y \a\t g:i A', 'Asia/Singapore')
+                    ->sortable()
+                    ->searchable(),
             ])
+            ->defaultSort('created_time', 'desc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                // Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
     
@@ -55,8 +73,8 @@ class NotionDatabaseResource extends Resource
     {
         return [
             'index' => Pages\ListNotionDatabases::route('/'),
-            'create' => Pages\CreateNotionDatabase::route('/create'),
-            'edit' => Pages\EditNotionDatabase::route('/{record}/edit'),
+            // 'create' => Pages\CreateNotionDatabase::route('/create'),
+            // 'edit' => Pages\EditNotionDatabase::route('/{record}/edit'),
         ];
     }    
 }

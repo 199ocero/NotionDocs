@@ -43,6 +43,6 @@ class ListNotionDatabases extends ListRecords
     public function importDatabase(): void
     {
         $database = new ImportDatabaseService;
-        dd($database->importDatabase());
+        $database->importDatabase();
     }
 }
