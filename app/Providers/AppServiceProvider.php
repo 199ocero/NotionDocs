@@ -52,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
                 NavigationGroup::make()
                     ->label('Account')
             ]);
+
+            Filament::registerViteTheme('resources/css/app.css');
         });
     }
 }
