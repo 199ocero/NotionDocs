@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('notion_database_id');
             $table->string('page_id')->unique();
-            $table->string('tile');
+            $table->string('title');
             $table->string('description');
             $table->string('method');
             $table->string('endpoint');
