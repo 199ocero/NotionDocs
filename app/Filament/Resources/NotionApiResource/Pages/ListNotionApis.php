@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Filament\Resources\NotionApiResource\Pages;
+
+use Filament\Forms;
+use Filament\Pages\Actions;
+use Filament\Resources\Pages\ListRecords;
+use App\Services\Settings\SettingsService;
+use App\Filament\Resources\NotionApiResource;
+use App\Models\Settings;
+
+class ListNotionApis extends ListRecords
+{
+    protected static string $resource = NotionApiResource::class;
+
+    protected function getActions(): array
+    {
+        $record = Settings::first();
+        
+        $base_url = tap(Forms\Components\TextInput::make('base_url')
+                        ->label('Base Url')
+                        ->required()
+                        ->url()
+                        ->placeholder('e.g. https://www.notion.so'),
+                        function ($input) use ($record) {
+                            if ($record) {
+                                $input->default($record->base_url);
+                            }
+                        });
+
+        $version = tap(Forms\Components\TextInput::make('version')
+                    ->label('Version')
+                    ->required()
+                    ->placeholder('e.g v1'),
+                    function ($input) use ($record) {
+                        if ($record) {
+                            $input->default($record->version);
+                        }
+                    });
+        
+        $headers = tap(Forms\Components\Repeater::make('headers')
+                    ->schema([
+                        Forms\Components\TextInput::make('key')
+                            ->label('Key')
+                            ->required()
+                            ->placeholder('e.g. Accept'),
+                        Forms\Components\TextInput::make('value')
+                            ->label('Value')
+                            ->required()
+                            ->placeholder('e.g. application/json'),
+                    ])
+                    ->columns(2)
+                    ->createItemButtonLabel('Add Header')
+                    ->required()
+                    ->defaultItems(1)
+                    ->minItems(1),
+                    function ($input) use ($record) {
+                        if ($record) {
+                            $input->default($record->headers);
+                        }
+                    });
+        return [
+            Actions\CreateAction::make()
+                ->label('New Api')
+                ->icon('heroicon-o-link')
+                ->color('primary'),
+            Actions\Action::make('settings')
+                ->action(function (array $data): void {
+                    $settings = new SettingsService;
+                    $settings->saveSettings($data);
+                })
+                ->form([
+                    Forms\Components\Card::make()
+                        ->schema([
+                            $base_url,
+                            $version,
+                        ])
+                        ->columns(2),
+                    Forms\Components\Card::make()
+                        ->schema([
+                            $headers
+                        ])
+                ])
+                ->label('Settings')
+                ->icon('heroicon-o-cog')
+                ->color('secondary')
+        ];
+    }
+}
