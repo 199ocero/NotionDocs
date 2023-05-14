@@ -9,6 +9,6 @@ class SettingsService
     public function saveSettings($result)
     {
         $settings = new SettingsRepository;
-        $settings->saveSettings($result);
+        return $settings->saveSettings($result);
     }
 }

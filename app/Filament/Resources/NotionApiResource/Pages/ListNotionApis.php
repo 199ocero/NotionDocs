@@ -3,11 +3,12 @@
 namespace App\Filament\Resources\NotionApiResource\Pages;
 
 use Filament\Forms;
+use App\Models\Settings;
 use Filament\Pages\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use App\Services\Settings\SettingsService;
 use App\Filament\Resources\NotionApiResource;
-use App\Models\Settings;
 
 class ListNotionApis extends ListRecords
 {
@@ -48,8 +49,15 @@ class ListNotionApis extends ListRecords
                             ->label('Value')
                             ->required()
                             ->placeholder('e.g. application/json'),
+                        Forms\Components\Select::make('required')
+                            ->label('Is Required?')
+                            ->required()
+                            ->options([
+                                'True' => 'Yes',
+                                'False' => 'No'
+                            ])
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->createItemButtonLabel('Add Header')
                     ->required()
                     ->defaultItems(1)
@@ -61,13 +69,34 @@ class ListNotionApis extends ListRecords
                     });
         return [
             Actions\CreateAction::make()
-                ->label('New Api')
+                ->label(function (): string {
+                    if(!Settings::count() == 0){
+                        return 'Create API';
+                    }else{
+                        return 'Set Settings First';
+                    }
+                })
                 ->icon('heroicon-o-link')
-                ->color('primary'),
+                ->color('primary')
+                ->disabled(Settings::count() == 0),
             Actions\Action::make('settings')
                 ->action(function (array $data): void {
                     $settings = new SettingsService;
-                    $settings->saveSettings($data);
+                    $result = $settings->saveSettings($data);
+
+                    if($result) {
+                        Notification::make()
+                            ->success()
+                            ->title('Save Successfully!')
+                            ->body('Api settings save successfully!')
+                            ->send();
+                    }else{
+                        Notification::make()
+                            ->warning()
+                            ->title('There was an error!')
+                            ->body('Please try again later.')
+                            ->send();
+                    }
                 })
                 ->form([
                     Forms\Components\Card::make()
