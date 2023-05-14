@@ -13,7 +13,6 @@ use Notion\Pages\PageParent;
 use App\Models\NotionDatabase;
 use Notion\Blocks\CodeLanguage;
 use Notion\Pages\Properties\Title;
-use Notion\Blocks\BulletedListItem;
 use Notion\Pages\Properties\Select;
 use Notion\Pages\Properties\RichTextProperty;
 use App\Repositories\Notion\Token\TokenRepository;
@@ -43,10 +42,16 @@ class NotionApiRepository
         if($data['params']){
             $params[] = Heading2::fromString("Parameters");
             foreach ($data['params'] as $parameter) {
-                $params[] = BulletedListItem::create()
-                    ->addText(RichText::fromString($parameter['key'])->bold()->code()->color(Color::Red))
-                    ->addText(RichText::fromString(" - " . $parameter['data_type']));
+                $codeLine[] = (RichText::fromString($parameter['key'])->color(Color::Red));
+                $codeLine[] = (RichText::fromString(" - " . $parameter['data_type']));
+                $codeLine[] = (RichText::fromString(" (" . $parameter['parameter_type']. ")"));
+                $codeLine[] = RichText::fromString("\n");
             }
+            array_pop($codeLine);
+            $params[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Bash);
+        }else{
+            $params[] = Heading2::fromString("Parameters");
+            $params[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
         }
 
         $body = [];
@@ -59,14 +64,34 @@ class NotionApiRepository
 
             $codeLine[] = RichText::fromString("{\n");
             $codeLine = $this->handleJsonData($decodedData, $codeLine, 1);
-            $codeLine[] = RichText::fromString("}");
+            $codeLine[] = RichText::fromString("\n}");
 
             $body[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Json);
+        }else{
+            $body[] = Heading2::fromString("Request Body");
+            $body[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
         }
         
         $settings = Settings::first();
         
+        $headers = [];
+    
+        if($settings->headers){
+            $headers[] = Heading2::fromString("Headers");
+            foreach ($settings->headers as $header) {
+                $codeLineHeader[] = (RichText::fromString($header['key'])->color(Color::Red));
+                $codeLineHeader[] = (RichText::fromString(" - " . $header['value']));
+                $codeLineHeader[] = RichText::fromString("\n");
+            }
+            array_pop($codeLineHeader);
+            $headers[] = Code::create()->changeText(...$codeLineHeader)->changeLanguage(CodeLanguage::Bash);
+        }else{
+            $headers[] = Heading2::fromString("Headers");
+            $headers[] = Code::create()->changeText(RichText::fromString('//No headers')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
+        }
+
         $content = [
+            ...$headers,
             Heading2::fromString("Endpoint"),
             Code::fromString(generateUrl($settings->base_url, $settings->version, $data['endpoint']), CodeLanguage::Bash),
             ...$params,
@@ -74,7 +99,7 @@ class NotionApiRepository
         ];
 
         $page = $notion->pages()->create($page, $content);
-        
+
         return $page;
     }
 
@@ -95,7 +120,7 @@ class NotionApiRepository
     
             $codeLine[] = RichText::fromString(", \n");
         }
-    
+        array_pop($codeLine);
         return $codeLine;
     }
 
