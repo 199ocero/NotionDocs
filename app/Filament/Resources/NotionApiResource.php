@@ -42,7 +42,9 @@ class NotionApiResource extends Resource
         $headerComponents = [];
         if($headers){
             foreach($headers->headers as $header){
-                $headerComponents[] = Forms\Components\Toggle::make(snakeCase($header['key']));
+                $headerComponents[] = Forms\Components\Toggle::make(snakeCase($header['key']))
+                    ->required(filter_var($header['required'], FILTER_VALIDATE_BOOLEAN))
+                    ->default(filter_var($header['required'], FILTER_VALIDATE_BOOLEAN));
             }
         }
         return $form
@@ -108,7 +110,16 @@ class NotionApiResource extends Resource
                                             'Array' => 'Array',
                                             'Object' => 'Object'
                                         ]),
+                                    Forms\Components\Select::make('parameter_type')
+                                        ->required()
+                                        ->label('Parameter Type')
+                                        ->placeholder('Select Parameter Type')
+                                        ->options([
+                                            'Required' => 'Required',
+                                            'Hidden' => 'Hidden'
+                                        ]),
                                 ])
+                                ->columns(3)
                                 ->defaultItems(0)
                         ]),
                     Forms\Components\Card::make()
