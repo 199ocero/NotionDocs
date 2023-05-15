@@ -8,6 +8,7 @@ use App\Services\Notion\Api\ApiService;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\NotionApiResource;
+use App\Repositories\Notion\Api\NotionBlocksRepository;
 
 class CreateNotionApi extends CreateRecord
 {
@@ -34,7 +35,10 @@ class CreateNotionApi extends CreateRecord
         $api = new ApiService;
         $page = $api->storeApiPage($data);
         $data['page_id'] = $page->id;
-
+        
+        $blocks = new NotionBlocksRepository;
+        $blocks->storeBlocks($page);
+        
         return static::getModel()::create($data);
     }
 
