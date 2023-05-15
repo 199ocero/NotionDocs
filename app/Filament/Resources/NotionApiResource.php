@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Awcodes\FilamentBadgeableColumn\Components\Badge;
 use App\Filament\Resources\NotionApiResource\RelationManagers;
 use App\Models\Settings;
+use App\Rules\EndpointValidationRule;
+use App\Rules\JsonOnlyRule;
 use Awcodes\FilamentBadgeableColumn\Components\BadgeableColumn;
 
 class NotionApiResource extends Resource
@@ -53,6 +55,7 @@ class NotionApiResource extends Resource
                 ->schema([
                     Forms\Components\Card::make()
                         ->schema([
+                            Forms\Components\Hidden::make('page_id'),
                             Forms\Components\Section::make('Headers')
                                 ->schema([
                                     ...$headerComponents
@@ -80,7 +83,8 @@ class NotionApiResource extends Resource
                             Forms\Components\TextInput::make('endpoint')
                                 ->required()
                                 ->label('Endpoint')
-                                ->placeholder('Enter Endpoint'),
+                                ->placeholder('Enter Endpoint')
+                                ->rules([new EndpointValidationRule]),
                             Forms\Components\Select::make('notion_database_id')
                                 ->required()
                                 ->label('Database')
@@ -126,6 +130,7 @@ class NotionApiResource extends Resource
                         ->schema([
                             CodeField::make('body')
                                 ->label('Request Body (Optional)')
+                                ->rules([new JsonOnlyRule()])
                                 ->withLineNumbers(),
                         ])
                 ])
