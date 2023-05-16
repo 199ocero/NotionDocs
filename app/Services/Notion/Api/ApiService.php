@@ -12,6 +12,12 @@ class ApiService
         return $api->storeApiPage($data);
     }
 
+    public function updateApiPage($data)
+    {
+        $api = new NotionApiRepository;
+        return $api->updateApiPage($data);
+    }
+
     public function deleteApiPage($data)
     {
         $api = new NotionApiRepository;
