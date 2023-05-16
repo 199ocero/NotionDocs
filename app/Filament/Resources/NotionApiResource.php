@@ -56,11 +56,11 @@ class NotionApiResource extends Resource
                     Forms\Components\Card::make()
                         ->schema([
                             Forms\Components\Hidden::make('page_id'),
-                            Forms\Components\Section::make('Headers')
-                                ->schema([
-                                    ...$headerComponents
-                                ])
-                                ->columns(6),
+                            Forms\Components\Select::make('notion_database_id')
+                                ->required()
+                                ->label('Database')
+                                ->placeholder('Select Database')
+                                ->options(NotionDatabase::all()->pluck('title', 'id')),
                             Forms\Components\TextInput::make('title')
                                 ->required()
                                 ->label('Title')
@@ -80,16 +80,16 @@ class NotionApiResource extends Resource
                                 ->required()
                                 ->label('Description')
                                 ->placeholder('Enter Description'),
+                            Forms\Components\Fieldset::make('Headers')
+                                ->schema([
+                                    ...$headerComponents
+                                ])
+                                ->columns(6),
                             Forms\Components\TextInput::make('endpoint')
                                 ->required()
                                 ->label('Endpoint')
                                 ->placeholder('Enter Endpoint')
                                 ->rules([new EndpointValidationRule]),
-                            Forms\Components\Select::make('notion_database_id')
-                                ->required()
-                                ->label('Database')
-                                ->placeholder('Select Database')
-                                ->options(NotionDatabase::all()->pluck('title', 'id')),
                         ]),
                     Forms\Components\Card::make()
                         ->schema([
@@ -120,7 +120,7 @@ class NotionApiResource extends Resource
                                         ->placeholder('Select Parameter Type')
                                         ->options([
                                             'Required' => 'Required',
-                                            'Hidden' => 'Hidden'
+                                            'Optional' => 'Optional'
                                         ]),
                                 ])
                                 ->columns(3)
