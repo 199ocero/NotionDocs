@@ -172,7 +172,7 @@ class NotionApiResource extends Resource
                     ->sortable()
                     ->searchable(),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('created_at', 'asc')
             ->filters([
                 //
             ])
