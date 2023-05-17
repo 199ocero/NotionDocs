@@ -78,7 +78,7 @@ class NotionApiRepository
         
         $headers = [];
     
-        if($data['headers']){
+        if($data['headers'] && array_search(true, $data['headers']) !== false){
             $headers[] = Heading2::fromString("Headers");
 
             foreach ($data['headers'] as $key => $value) {
