@@ -4,23 +4,25 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Settings;
 use App\Models\NotionApi;
+use App\Rules\JsonOnlyRule;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use App\Models\NotionDatabase;
 use Filament\Resources\Resource;
+use App\Rules\EndpointValidationRule;
 use App\Services\Notion\Api\ApiService;
 use Illuminate\Database\Eloquent\Model;
 use Creagia\FilamentCodeField\CodeField;
 use Filament\Notifications\Notification;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Notifications\Actions\Action;
 use App\Filament\Resources\NotionApiResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Awcodes\FilamentBadgeableColumn\Components\Badge;
 use App\Filament\Resources\NotionApiResource\RelationManagers;
-use App\Models\Settings;
-use App\Rules\EndpointValidationRule;
-use App\Rules\JsonOnlyRule;
 use Awcodes\FilamentBadgeableColumn\Components\BadgeableColumn;
 
 class NotionApiResource extends Resource
@@ -180,19 +182,9 @@ class NotionApiResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->recordTitle('Notion Api Page')
-                    ->before(function (Model $record) {
-                        
+                    ->before(function (Model $record) {  
                         $api = new ApiService;
-                        $result = $api->deleteApiPage($record->toArray());
-                        if(!$result){
-                            Notification::make()
-                                ->warning()
-                                ->title('There was an error!')
-                                ->body('Please try again later.')
-                                ->send();
-                
-                            $record->halt();
-                        }
+                        $api->deleteApiPage($record->toArray());
                     })
             ])
             ->bulkActions([
@@ -214,12 +206,5 @@ class NotionApiResource extends Resource
             'create' => Pages\CreateNotionApi::route('/create'),
             'edit' => Pages\EditNotionApi::route('/{record}/edit'),
         ];
-    }
-    
-    public static function snakeCase($string)
-    {
-        $lowercase = strtolower($string);
-        $snakeCase = str_replace(' ', '_', $lowercase);
-        return $snakeCase;
     }
 }
