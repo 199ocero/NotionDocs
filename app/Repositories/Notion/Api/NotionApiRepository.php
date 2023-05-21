@@ -173,12 +173,16 @@ class NotionApiRepository
 
     public function deleteApiPage($data)
     {
-        $token = new TokenRepository;
-        $notion = Notion::create($token->token());
-        $page = $notion->pages()->find($data['page_id']);
-        $page = $notion->pages()->delete($page);
-
-        return $page->archived;
+        try {
+            $token = new TokenRepository;
+            $notion = Notion::create($token->token());
+            $page = $notion->pages()->find($data['page_id']);
+            $page = $notion->pages()->delete($page);
+    
+            return $page->archived;
+        } catch (\Notion\Exceptions\ApiException $e) {
+            return false;
+        }
     }
 
     private function handleJsonData($data, $codeLine, $indentationLevel) {
