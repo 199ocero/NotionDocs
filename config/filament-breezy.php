@@ -19,7 +19,7 @@ return [
     /*
     | Customize the icon profile page icon in the navbar. Does not apply to the user menu.
     */
-    "profile_page_icon" => 'heroicon-o-document-text',
+    "profile_page_icon" => 'heroicon-o-user-circle',
     /*
     | Set an array that's compatible with the Filament Forms rules() method. Rules for required and confirmed are already set. These rules will apply to the My Profile, registration, and password reset forms. To use an instance of the \Illuminate\Validation\Rules\Password::class, see documentation.
     */
