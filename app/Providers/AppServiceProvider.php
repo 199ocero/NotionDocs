@@ -28,30 +28,11 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
         }
         Filament::serving(function () {
-            // if (Auth::check()) {
-            //     $user = Auth::user();
-            //     $notionToken = Notion::where('user_id', $user->id)->first();
-    
-            //     if ($notionToken) {
-            //         $label = 'Notion Already Signed In';
-            //         $url = null;
-            //         $color = 'success';
-            //     } else {
-            //         $label = 'Sign in Notion';
-            //         $url = route('login.notion');
-            //         $color = 'danger';
-            //     }
-            //     Filament::registerUserMenuItems([
-            //         UserMenuItem::make()
-            //             ->label($label)
-            //             ->url($url)
-            //             ->icon('heroicon-s-lightning-bolt')
-            //             ->color($color),
-            //     ]);
-            // }
             Filament::registerNavigationGroups([
                 NavigationGroup::make()
                      ->label('Notion'),
+                NavigationGroup::make()
+                     ->label('Team'),
                 NavigationGroup::make()
                     ->label('Account')
             ]);
