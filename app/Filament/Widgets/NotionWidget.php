@@ -4,11 +4,13 @@ namespace App\Filament\Widgets;
 
 use App\Models\NotionApi;
 use App\Models\NotionDatabase;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class NotionWidget extends BaseWidget
 {
+    use HasWidgetShield;
     protected function getCards(): array
     {
         $databaseCount = NotionDatabase::where('user_id', auth()->user()->id ?? 0)->first();
@@ -27,6 +29,10 @@ class NotionWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->hasRole('admin');
+        if(auth()->user()->hasRole('super_admin')){
+            return false;
+        }else{
+            return true;
+        }
     }
 }
