@@ -37,7 +37,8 @@ class NotionApiResource extends Resource
 
     protected static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $database = NotionDatabase::where('user_id', auth()->user()->id)->first();
+        return static::getModel()::where('notion_database_id', $database->id ?? 0)->count();
     }
 
     public static function form(Form $form): Form

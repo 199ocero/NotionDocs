@@ -25,7 +25,7 @@ class NotionDatabaseResource extends Resource
 
     protected static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getModel()::where('user_id', auth()->id() ?? 0)->count();
     }
 
     public static function form(Form $form): Form

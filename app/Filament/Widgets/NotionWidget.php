@@ -11,12 +11,14 @@ class NotionWidget extends BaseWidget
 {
     protected function getCards(): array
     {
+        $databaseCount = NotionDatabase::where('user_id', auth()->user()->id ?? 0)->first();
+        $apiCount = NotionApi::where('notion_database_id', $databaseCount->id ?? 0)->count();
         return [
-            Card::make('Notion Database', NotionDatabase::count())
+            Card::make('Notion Database', $databaseCount==null ? 0 : $databaseCount->count())
                 ->description('Total count of databases stored within Notion')
                 ->icon('heroicon-s-sparkles')
                 ->color('primary'),
-            Card::make('Notion Api', NotionApi::count())
+            Card::make('Notion Api', $apiCount)
                 ->description('Total count of apis stored within Notion')
                 ->icon('heroicon-s-code')
                 ->color('primary'),

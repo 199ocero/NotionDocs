@@ -5,8 +5,10 @@ namespace App\Filament\Resources\NotionApiResource\Pages;
 use Filament\Forms;
 use App\Models\Settings;
 use Filament\Pages\Actions;
+use App\Models\NotionDatabase;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 use App\Services\Settings\SettingsService;
 use App\Filament\Resources\NotionApiResource;
 
@@ -114,5 +116,11 @@ class ListNotionApis extends ListRecords
                 ->icon('heroicon-o-cog')
                 ->color('secondary')
         ];
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        $database = NotionDatabase::where('user_id', auth()->user()->id)->first();
+        return parent::getTableQuery()->where('notion_database_id', $database->id ?? 0);
     }
 }

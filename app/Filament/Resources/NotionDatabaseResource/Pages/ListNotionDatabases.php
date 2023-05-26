@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\NotionDatabaseResource\Pages;
 
-use App\Filament\Resources\NotionDatabaseResource;
 use App\Models\NotionToken;
-use App\Services\Notion\Database\ImportDatabaseService;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\NotionDatabaseResource;
+use App\Services\Notion\Database\ImportDatabaseService;
 
 class ListNotionDatabases extends ListRecords
 {
@@ -44,5 +45,10 @@ class ListNotionDatabases extends ListRecords
     {
         $database = new ImportDatabaseService;
         $database->importDatabase();
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return parent::getTableQuery()->where('user_id', auth()->id() ?? 0);
     }
 }
