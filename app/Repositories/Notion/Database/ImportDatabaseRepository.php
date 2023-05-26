@@ -19,6 +19,7 @@ class ImportDatabaseRepository
             $database = NotionDatabase::where('database_id', $id)->first();
 
             if ($database) {
+                $database->user_id = auth()->user()->id;
                 $database->title = $titlePlainText;
                 $database->created_time = $createdTime;
                 $database->save();
@@ -26,6 +27,7 @@ class ImportDatabaseRepository
                 $databaseNames[] = $titlePlainText;
             }else{
                 NotionDatabase::create([
+                    'user_id' => auth()->user()->id,
                     'database_id' => $id,
                     'title' => $titlePlainText,
                     'created_time' => $createdTime

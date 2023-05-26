@@ -11,6 +11,7 @@ class NotionDatabase extends Model
 
     protected $table = 'notion_databases';
     protected $fillable = [
+        'user_id',
         'database_id',
         'title',
         'created_time',
