@@ -92,12 +92,6 @@ class ListNotionApis extends ListRecords
                             ->title('Save Successfully!')
                             ->body('Api settings save successfully!')
                             ->send();
-                    }else{
-                        Notification::make()
-                            ->warning()
-                            ->title('There was an error!')
-                            ->body('Please try again later.')
-                            ->send();
                     }
                 })
                 ->form([
