@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('invited_by_id');
             $table->unsignedBigInteger('invited_id');
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->timestamp('invitation_sent_at')->nullable();
+            $table->timestamp('invitation_response_at')->nullable();
             $table->timestamps();
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->foreign('invited_by_id')->references('id')->on('users')->onDelete('cascade');
