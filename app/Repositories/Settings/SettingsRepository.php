@@ -27,8 +27,6 @@ class SettingsRepository
 
             return true;
         }
-
-        return false;
     }
 
 }
