@@ -10,6 +10,7 @@ use App\Services\Team\TeamService;
 use Illuminate\Support\HtmlString;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\MemberResource;
+use App\Services\Team\MemberService;
 use Filament\Resources\Pages\ManageRecords;
 
 class ManageMembers extends ManageRecords
@@ -43,7 +44,17 @@ class ManageMembers extends ManageRecords
                     $data['team_id'] = Team::where('user_id', auth()->id())->first()->id;
                     $data['invited_by_id'] = auth()->id();
                     $data['status'] = Team::PENDING;
-                    dd($data);
+                    
+                    $member = new MemberService;
+                    $result = $member->saveMemberInvitation($data);
+
+                    if($result) {
+                        Notification::make()
+                            ->success()
+                            ->title('Invitation Sent!')
+                            ->body('Invitation sent successfully!')
+                            ->send();
+                    }
                 })
                 ->form([
                     Forms\Components\Select::make('invited_id')
@@ -60,6 +71,7 @@ class ManageMembers extends ManageRecords
                                 ->pluck('email', 'id');
                         })
                         ->getOptionLabelsUsing(fn ($values): array => User::find($values)?->pluck('email', 'id')->toArray())
+                        ->label('Email')
                         ->placeholder('Search by email')
                         ->helperText(new HtmlString("Only registered users will be displayed here, and you can only invite up to three members.<br><span style='color:#F87171'><strong>Note:</strong><i> Please note that it is not possible to invite members who have already been invited to another team.</i></span> "))
                         ->maxItems(3)
