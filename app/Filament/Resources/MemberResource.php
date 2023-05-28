@@ -40,7 +40,11 @@ class MemberResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invited.name')
-                    ->label('Invited User')
+                    ->label('Invited Member')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('invited.email')
+                    ->label('Invited Email')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
@@ -66,15 +70,19 @@ class MemberResource extends Resource
                     ->date('F j, Y \a\t g:i A', 'Asia/Singapore')
                     ->sortable()
             ])
+            ->defaultSort('invitation_sent_at', 'desc')
             ->filters([
                 //
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Cancel')
+                    ->modalHeading('Cancel Invitation')
+                    ->modalButton('Yes, confirm!'),
             ])
             ->bulkActions([
-                // Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
     
