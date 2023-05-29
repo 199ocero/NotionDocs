@@ -9,6 +9,11 @@ class Member extends Model
 {
     use HasFactory;
 
+    // invitation status
+    const PENDING = 'pending';
+    const ACCEPTED = 'accepted';
+    const REJECTED = 'rejected';
+
     protected $table = 'members';
     protected $fillable = [
         'team_id',

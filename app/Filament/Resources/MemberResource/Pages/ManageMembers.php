@@ -51,7 +51,7 @@ class ManageMembers extends ManageRecords
                 ->action(function (array $data): void {
                     $data['team_id'] = Team::where('user_id', auth()->id())->first()->id;
                     $data['invited_by_id'] = auth()->id();
-                    $data['status'] = Team::PENDING;
+                    $data['status'] = Member::PENDING;
                     
                     $member = new MemberService;
                     $result = $member->saveMemberInvitation($data);
