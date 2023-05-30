@@ -70,7 +70,10 @@ class ManageMembers extends ManageRecords
                         ->multiple()
                         ->searchable()
                         ->getSearchResultsUsing(function (string $search) {
-                            $excludeIds = Member::all()->pluck('invited_id')->toArray();
+                            $excludeIds = Member::where('status', Member::ACCEPTED)
+                                            ->pluck('invited_id')
+                                            ->toArray();
+
                             return User::where('email', 'like', "%{$search}%")
                                 ->where('email', '!=', auth()->user()->email)
                                 ->whereHas('roles', function ($query) {
