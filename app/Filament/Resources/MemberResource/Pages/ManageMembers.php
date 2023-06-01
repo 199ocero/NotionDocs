@@ -116,6 +116,13 @@ class ManageMembers extends ManageRecords
                     }else{
                         return true;
                     }
+                })
+                ->hidden(function () use ($count): bool {
+                    if(Team::where('user_id', auth()->id())->first()){
+                        return false;
+                    }else{
+                        return true;
+                    }
                 }),
             Actions\Action::make('team')
                 ->action(function (array $data): void {

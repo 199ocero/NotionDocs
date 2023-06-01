@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\Team;
 use Filament\Tables;
 use App\Models\Settings;
 use App\Models\NotionApi;
@@ -43,7 +44,8 @@ class NotionApiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $headers = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $headers = Settings::where('team_id', $team->id ?? 0)->first();
         $headerComponents = [];
         if($headers){
             foreach($headers->headers as $header){

@@ -11,6 +11,7 @@ class Settings extends Model
 
     protected $table = 'settings';
     protected $fillable = [
+        'team_id',
         'base_url',
         'version',
         'headers',

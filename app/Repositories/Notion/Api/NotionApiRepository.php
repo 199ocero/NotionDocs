@@ -2,13 +2,14 @@
 
 namespace App\Repositories\Notion\Api;
 
-use App\Models\NotionApi;
-use App\Models\NotionBlock;
 use Notion\Notion;
+use App\Models\Team;
 use Notion\Pages\Page;
 use Notion\Blocks\Code;
 use App\Models\Settings;
 use Notion\Common\Color;
+use App\Models\NotionApi;
+use App\Models\NotionBlock;
 use Notion\Blocks\Heading2;
 use Notion\Common\RichText;
 use Notion\Pages\PageParent;
@@ -74,7 +75,8 @@ class NotionApiRepository
             $body[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
         }
         
-        $settings = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $settings = Settings::where('team_id', $team->id ?? 0)->first();
         
         $headers = [];
     
@@ -215,7 +217,8 @@ class NotionApiRepository
     
     private function headerBlock($notionPage, $data, $block, $notion)
     {
-        $settings = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $settings = Settings::where('team_id', $team->id ?? 0)->first();
 
         if($notionPage->headers !== $data['headers']){
             if($data['headers']){
@@ -242,6 +245,9 @@ class NotionApiRepository
 
     private function endpointBlock($notionPage, $data, $block, $notion)
     {
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $settings = Settings::where('team_id', $team->id ?? 0)->first();
+
         if($notionPage->endpoint !== $data['endpoint']){
             $block = $block->changeText(RichText::fromString(generateUrl($settings->base_url, $settings->version, $data['endpoint']))->color(Color::Red))->changeLanguage(CodeLanguage::Bash);
             $notion->blocks()->update($block);

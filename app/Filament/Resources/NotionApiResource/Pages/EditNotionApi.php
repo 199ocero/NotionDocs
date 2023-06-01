@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NotionApiResource\Pages;
 
+use App\Models\Team;
 use App\Models\Settings;
 use Filament\Pages\Actions;
 use App\Services\Notion\Api\ApiService;
@@ -21,7 +22,9 @@ class EditNotionApi extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $headers = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        
         $headerKey = [];
         $dataHeaders = $data['headers'];
 
@@ -42,7 +45,9 @@ class EditNotionApi extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
-        $headers = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        
         $headerKey = [];
         if ($headers) {
             foreach ($headers->headers as $header) {

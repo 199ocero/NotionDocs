@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('team_id');
             $table->string('base_url');
             $table->string('version');
             $table->json('headers');
             $table->timestamps();
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade'); 
         });
     }
 

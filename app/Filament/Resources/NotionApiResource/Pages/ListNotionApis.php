@@ -11,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Settings\SettingsService;
 use App\Filament\Resources\NotionApiResource;
+use App\Models\Team;
 
 class ListNotionApis extends ListRecords
 {
@@ -18,7 +19,8 @@ class ListNotionApis extends ListRecords
 
     protected function getActions(): array
     {
-        $record = Settings::first();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $record = Settings::where('team_id', $team->id ?? 0)->first();
         
         $base_url = tap(Forms\Components\TextInput::make('base_url')
                         ->label('Base Url')
@@ -71,8 +73,8 @@ class ListNotionApis extends ListRecords
                     });
         return [
             Actions\CreateAction::make()
-                ->label(function (): string {
-                    if(!Settings::count() == 0){
+                ->label(function () use ($record): string {
+                    if($record){
                         return 'Create API';
                     }else{
                         return 'Set Settings First';
@@ -80,7 +82,13 @@ class ListNotionApis extends ListRecords
                 })
                 ->icon('heroicon-o-link')
                 ->color('primary')
-                ->disabled(Settings::count() == 0),
+                ->hidden(function () use ($record): bool {
+                    if($record){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }),
             Actions\Action::make('settings')
                 ->action(function (array $data): void {
                     $settings = new SettingsService;
@@ -106,9 +114,22 @@ class ListNotionApis extends ListRecords
                             $headers
                         ])
                 ])
-                ->label('Settings')
+                ->label(function () use ($team): string {
+                    if($team){
+                        return 'Settings';
+                    }else{
+                        return 'Set Team Settings First';
+                    }
+                })
                 ->icon('heroicon-o-cog')
                 ->color('secondary')
+                ->disabled(function () use ($team): bool {
+                    if($team){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                })
         ];
     }
 
