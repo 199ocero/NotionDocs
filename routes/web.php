@@ -14,10 +14,6 @@ use App\Http\Controllers\Auth\NotionOAuthController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::middleware(['auth', 'check.notion.token'])->group(function () {
     Route::get('/login/notion', [NotionOAuthController::class, 'redirectToProvider'])->name('login.notion');
     Route::get('/login/notion/callback', [NotionOAuthController::class, 'handleProviderCallback']);
