@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Models\Member;
 use Filament\Resources\Form;
@@ -78,6 +79,8 @@ class CollaboratorResource extends Resource
                             'invitation_response_at' => now(),
                         ]);
 
+                        User::find($record->invited_id)->assignRole('collaborator');
+
                         $record->update([
                             'status' => Member::ACCEPTED,
                             'invitation_response_at' => now(),
@@ -124,7 +127,7 @@ class CollaboratorResource extends Resource
                     }),
                 Tables\Actions\Action::make('leave')
                     ->action(function (Member $record): void {
-                        
+                        User::find($record->invited_id)->removeRole('collaborator');
                         $record->delete();
                         Notification::make() 
                             ->title('You have left the team '.$record->team->name.'!')

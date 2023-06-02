@@ -63,5 +63,11 @@ class DatabaseSeeder extends Seeder
 
         // Assign admin role to admin user
         $admin->assignRole($adminRole);
+
+        // Create collaborator role
+        Role::firstOrCreate([
+            'name' => 'collaborator',
+            'guard_name' => 'web',
+        ]);
     }
 }

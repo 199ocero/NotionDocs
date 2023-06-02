@@ -32,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
                 NavigationGroup::make()
                      ->label('Notion'),
                 NavigationGroup::make()
+                     ->label('Notion Collaborator'),
+                NavigationGroup::make()
                      ->label('Team'),
                 NavigationGroup::make()
                     ->label('Account')

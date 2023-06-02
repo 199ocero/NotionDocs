@@ -4,6 +4,7 @@ namespace App\Repositories\Notion\Api;
 
 use Notion\Notion;
 use App\Models\Team;
+use App\Models\Member;
 use Notion\Pages\Page;
 use Notion\Blocks\Code;
 use App\Models\Settings;
@@ -217,8 +218,14 @@ class NotionApiRepository
     
     private function headerBlock($notionPage, $data, $block, $notion)
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        if(auth()->user()->hasRole('collaborator')){
+            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+            $team = Team::where('user_id', $member->invited_by_id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }else{
+            $team = Team::where('user_id', auth()->user()->id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }
 
         if($notionPage->headers !== $data['headers']){
             if($data['headers']){
@@ -245,8 +252,14 @@ class NotionApiRepository
 
     private function endpointBlock($notionPage, $data, $block, $notion)
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        if(auth()->user()->hasRole('collaborator')){
+            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+            $team = Team::where('user_id', $member->invited_by_id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }else{
+            $team = Team::where('user_id', auth()->user()->id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }
 
         if($notionPage->endpoint !== $data['endpoint']){
             $block = $block->changeText(RichText::fromString(generateUrl($settings->base_url, $settings->version, $data['endpoint']))->color(Color::Red))->changeLanguage(CodeLanguage::Bash);

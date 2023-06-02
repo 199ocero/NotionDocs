@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Models\Member;
 use Filament\Resources\Form;
@@ -117,6 +118,7 @@ class MemberResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->label(function (Member $record): string {
                         if ($record->status === Member::ACCEPTED) {
+                            User::find($record->invited_id)->removeRole('collaborator');
                             return 'Remove';
                         }else if ($record->status === Member::REJECTED) {
                             return 'Delete';

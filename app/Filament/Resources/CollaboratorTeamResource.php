@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\Team;
+use App\Models\User;
 use Filament\Tables;
+use App\Models\Member;
 use App\Models\Settings;
 use App\Models\NotionApi;
 use App\Rules\JsonOnlyRule;
@@ -16,36 +18,50 @@ use App\Rules\EndpointValidationRule;
 use App\Services\Notion\Api\ApiService;
 use Illuminate\Database\Eloquent\Model;
 use Creagia\FilamentCodeField\CodeField;
-use Filament\Notifications\Notification;
-use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Notifications\Actions\Action;
-use App\Filament\Resources\NotionApiResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Awcodes\FilamentBadgeableColumn\Components\Badge;
-use App\Filament\Resources\NotionApiResource\RelationManagers;
+use App\Filament\Resources\CollaboratorTeamResource\Pages;
 use Awcodes\FilamentBadgeableColumn\Components\BadgeableColumn;
+use App\Filament\Resources\CollaboratorTeamResource\RelationManagers;
 
-class NotionApiResource extends Resource
+class CollaboratorTeamResource extends Resource
 {
     protected static ?string $model = NotionApi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-code';
 
-    protected static ?string $navigationGroup = 'Notion';
+    protected static ?string $navigationGroup = 'Notion Collaborator';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationLabel = 'Collaborator Api';
+
+    protected static ?string $pluralLabel = null;
+
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $slug = 'collaborator-api';
+
+    public static function getPluralLabel(): string
+    {
+        if (self::$pluralLabel === null) {
+            self::$pluralLabel = getTeam()->name;
+        }
+        return self::$pluralLabel;
+    }
 
     protected static function getNavigationBadge(): ?string
     {
-        $database = NotionDatabase::where('user_id', auth()->user()->id)->first();
+        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+        $database = NotionDatabase::where('user_id', $member->invited_by_id)->first();
         return static::getModel()::where('notion_database_id', $database->id ?? 0)->count();
     }
 
     public static function form(Form $form): Form
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
+        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+        $team = Team::where('user_id', $member->invited_by_id)->first();
         $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        
         $headerComponents = [];
         if($headers){
             foreach($headers->headers as $header){
@@ -205,9 +221,18 @@ class NotionApiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListNotionApis::route('/'),
-            'create' => Pages\CreateNotionApi::route('/create'),
-            'edit' => Pages\EditNotionApi::route('/{record}/edit'),
+            'index' => Pages\ListCollaboratorTeams::route('/'),
+            'create' => Pages\CreateCollaboratorTeam::route('/create'),
+            'edit' => Pages\EditCollaboratorTeam::route('/{record}/edit'),
         ];
+    }
+    
+    public static function canViewAny(): bool
+    {
+        $member = Member::where('invited_id', auth()->user()->id)
+                        ->where('status', Member::ACCEPTED)
+                        ->first();
+
+        return $member && auth()->user()->hasRole('collaborator');
     }
 }
