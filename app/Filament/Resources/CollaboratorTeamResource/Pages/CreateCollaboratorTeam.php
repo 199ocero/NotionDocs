@@ -16,6 +16,15 @@ class CreateCollaboratorTeam extends CreateRecord
 {
     protected static string $resource = CollaboratorTeamResource::class;
 
+    protected static ?string $title = null;
+
+    protected function getTitle(): string
+    {
+        if (self::$title === null) {
+            self::$title = 'Create '.getTeam()->name.' Api';
+        }
+        return self::$title;
+    }
     protected function handleRecordCreation(array $data): Model
     {
         $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();

@@ -76,8 +76,14 @@ class NotionApiRepository
             $body[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
         }
         
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        if(auth()->user()->hasRole('collaborator')){
+            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+            $team = Team::where('user_id', $member->invited_by_id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }else{
+            $team = Team::where('user_id', auth()->user()->id)->first();
+            $settings = Settings::where('team_id', $team->id ?? 0)->first();
+        }
         
         $headers = [];
     
