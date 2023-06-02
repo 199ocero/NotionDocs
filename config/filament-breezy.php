@@ -108,7 +108,7 @@ return [
     |--------------------------------------------------------------------------
     | Where to redirect the user after registration.
     */
-    "registration_redirect_url" => env("FILAMENT_PATH").'/login',
+    "registration_redirect_url" => env("APP_URL").'/login',
     /*
     |--------------------------------------------------------------------------
     | Enable sanctum api token management.
