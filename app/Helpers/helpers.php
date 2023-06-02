@@ -23,7 +23,13 @@ if(!function_exists('generateUrl')){
 if(!function_exists('getTeam')){
     function getTeam()
     {  
-        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
-        return Team::where('user_id', $member->invited_by_id)->first();
+        if(auth()->user()->hasRole('collaborator')){
+            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+            $team = Team::where('user_id', $member->invited_by_id)->first();
+        }else{
+            $team = Team::where('user_id', auth()->user()->id)->first();
+        }
+
+        return $team;
     }
 }
