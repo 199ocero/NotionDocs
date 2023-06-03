@@ -118,7 +118,6 @@ class MemberResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->label(function (Member $record): string {
                         if ($record->status === Member::ACCEPTED) {
-                            User::find($record->invited_id)->removeRole('collaborator');
                             return 'Remove';
                         }else if ($record->status === Member::REJECTED) {
                             return 'Delete';
@@ -133,7 +132,12 @@ class MemberResource extends Resource
                         }
                         return 'Cancel Invitation';
                     })
-                    ->modalButton('Yes, confirm!'),
+                    ->modalButton('Yes, confirm!')
+                    ->before(function (Member $record) {
+                        if ($record->status === Member::ACCEPTED) {
+                            User::find($record->invited_id)->removeRole('collaborator');
+                        }
+                    }),
             ])
             ->bulkActions([
                 // Tables\Actions\DeleteBulkAction::make(),
