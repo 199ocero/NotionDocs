@@ -34,16 +34,7 @@ class CreateNotionApi extends CreateRecord
             }
         }
 
-        $member = Member::where('invited_id', auth()->user()->id)
-                    ->where('status', Member::ACCEPTED)
-                    ->first();
-
-        if($member && auth()->user()->hasRole('collaborator')){
-            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
-            $data['notion_database_id'] = NotionDatabase::where('user_id', $member->invited_by_id)->first()->id;
-        }else{
-            $data['notion_database_id'] = NotionDatabase::where('user_id', auth()->user()->id)->first()->id;
-        }
+        $data['notion_database_id'] = NotionDatabase::where('user_id', auth()->user()->id)->first()->id;
 
         $api = new ApiService;
         $page = $api->storeApiPage($data);

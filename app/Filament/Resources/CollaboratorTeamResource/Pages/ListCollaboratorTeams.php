@@ -17,9 +17,22 @@ class ListCollaboratorTeams extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Create Api')
+                ->label(function (): string {
+                    $settings = getHeaders();
+                    if($settings){
+                        return 'Create Api'; 
+                    }
+                    return "Settings Await: Owner Hasn't Configured Them Yet";
+                })
                 ->icon('heroicon-o-link')
                 ->color('primary')
+                ->disabled(function (): bool {
+                    $settings = getHeaders();
+                    if($settings){
+                        return false;
+                    }
+                    return true;
+                })
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CollaboratorTeamResource\Pages;
 
+use App\Models\Member;
 use App\Models\NotionDatabase;
 use App\Services\Notion\Api\ApiService;
 use Illuminate\Database\Eloquent\Model;
@@ -40,13 +41,15 @@ class CreateCollaboratorTeam extends CreateRecord
                 unset($data[$key]);
             }
         }
+
+        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
         
         $data['notion_database_id'] = NotionDatabase::where('user_id', $member->invited_by_id)->first()->id;
 
         $api = new ApiService;
         $page = $api->storeApiPage($data);
         $data['page_id'] = $page->id;
-        
+
         $blocks = new NotionBlocksRepository;
         $blocks->storeBlocks($page);
         
