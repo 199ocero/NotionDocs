@@ -58,9 +58,7 @@ class CollaboratorTeamResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
-        $team = Team::where('user_id', $member->invited_by_id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
         
         $headerComponents = [];
         if($headers){

@@ -24,8 +24,7 @@ class EditNotionApi extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
         
         $headerKey = [];
         $dataHeaders = $data['headers'];
@@ -47,8 +46,7 @@ class EditNotionApi extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
         
         $headerKey = [];
         if ($headers) {

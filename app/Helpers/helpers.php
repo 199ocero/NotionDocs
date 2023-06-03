@@ -2,6 +2,7 @@
 
 use App\Models\Team;
 use App\Models\Member;
+use App\Models\Settings;
 
 
 if (! function_exists('snakeCase')) {
@@ -31,5 +32,15 @@ if(!function_exists('getTeam')){
         }
 
         return $team;
+    }
+}
+
+if(!function_exists('getHeaders')){
+    function getHeaders()
+    {  
+        $userId = auth()->user()->id;
+        $team = Team::where('user_id', $userId)->first();
+        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        return $headers;
     }
 }

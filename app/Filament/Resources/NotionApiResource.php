@@ -44,8 +44,8 @@ class NotionApiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
+        
         $headerComponents = [];
         if($headers){
             foreach($headers->headers as $header){

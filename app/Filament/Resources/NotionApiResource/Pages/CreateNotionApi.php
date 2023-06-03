@@ -19,8 +19,7 @@ class CreateNotionApi extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $team = Team::where('user_id', auth()->user()->id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
         
         $headerKey = [];
         if ($headers) {

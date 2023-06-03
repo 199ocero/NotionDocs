@@ -28,9 +28,7 @@ class CreateCollaboratorTeam extends CreateRecord
     }
     protected function handleRecordCreation(array $data): Model
     {
-        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
-        $team = Team::where('user_id', $member->invited_by_id)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $headers = getHeaders();
         
         $headerKey = [];
         if ($headers) {
