@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\NotionDatabaseResource\Pages;
 
 use Filament\Forms;
-use App\Models\User;
 use App\Models\NotionToken;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;

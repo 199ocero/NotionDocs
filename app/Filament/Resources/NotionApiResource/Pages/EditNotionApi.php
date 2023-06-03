@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\NotionApiResource\Pages;
 
-use App\Models\Team;
 use App\Models\Member;
-use App\Models\Settings;
 use Filament\Pages\Actions;
 use App\Models\NotionDatabase;
 use App\Services\Notion\Api\ApiService;

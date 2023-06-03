@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
-use App\Models\Team;
 use Filament\Tables;
-use App\Models\Settings;
 use App\Models\NotionApi;
 use App\Rules\JsonOnlyRule;
 use Filament\Resources\Form;
