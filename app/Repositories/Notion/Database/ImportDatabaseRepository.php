@@ -44,6 +44,6 @@ class ImportDatabaseRepository
 
     private function deleteMissingDatabase($existingDatabaseIds)
     {
-        NotionDatabase::whereNotIn('database_id', $existingDatabaseIds)->delete();
+        NotionDatabase::where('user_id', auth()->id())->whereNotIn('database_id', $existingDatabaseIds)->delete();
     }
 }
