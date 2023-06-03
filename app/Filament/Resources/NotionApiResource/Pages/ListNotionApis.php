@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\NotionApiResource\Pages;
 
 use Filament\Forms;
+use App\Models\Settings;
 use Filament\Pages\Actions;
 use App\Models\NotionDatabase;
 use Filament\Notifications\Notification;
@@ -18,7 +19,8 @@ class ListNotionApis extends ListRecords
 
     protected function getActions(): array
     {
-        $record = getHeaders();
+        $team = Team::where('user_id', auth()->user()->id)->first();
+        $record = Settings::where('team_id', $team->id ?? 0)->first();
         
         $base_url = tap(Forms\Components\TextInput::make('base_url')
                         ->label('Base Url')
@@ -112,8 +114,8 @@ class ListNotionApis extends ListRecords
                             $headers
                         ])
                 ])
-                ->label(function (): string {
-                    if(Team::where('user_id', auth()->user()->id)->first()){
+                ->label(function () use ($team): string {
+                    if($team){
                         return 'Settings';
                     }else{
                         return 'Set Team Settings First';
@@ -121,8 +123,8 @@ class ListNotionApis extends ListRecords
                 })
                 ->icon('heroicon-o-cog')
                 ->color('secondary')
-                ->disabled(function (): bool {
-                    if(Team::where('user_id', auth()->user()->id)->first()){
+                ->disabled(function () use ($team): bool {
+                    if($team){
                         return false;
                     }else{
                         return true;
