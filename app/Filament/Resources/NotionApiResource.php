@@ -61,11 +61,6 @@ class NotionApiResource extends Resource
                     Forms\Components\Card::make()
                         ->schema([
                             Forms\Components\Hidden::make('page_id'),
-                            Forms\Components\Select::make('notion_database_id')
-                                ->required()
-                                ->label('Database')
-                                ->placeholder('Select Database')
-                                ->options(NotionDatabase::all()->pluck('title', 'id')),
                             Forms\Components\TextInput::make('title')
                                 ->required()
                                 ->label('Title')

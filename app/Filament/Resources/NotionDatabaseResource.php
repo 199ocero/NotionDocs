@@ -44,13 +44,13 @@ class NotionDatabaseResource extends Resource
                     ->label('Database Tile')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_time')
-                    ->label('Created Time')
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Imported Time')
                     ->date('F j, Y \a\t g:i A', 'Asia/Singapore')
                     ->sortable()
                     ->searchable(),
             ])
-            ->defaultSort('created_time', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->filters([
                 //
             ])

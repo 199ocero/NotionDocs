@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\Member;
 use App\Models\Settings;
 use Filament\Pages\Actions;
+use App\Models\NotionDatabase;
 use App\Services\Notion\Api\ApiService;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
@@ -45,6 +46,8 @@ class CreateCollaboratorTeam extends CreateRecord
                 unset($data[$key]);
             }
         }
+        
+        $data['notion_database_id'] = NotionDatabase::where('user_id', $member->invited_by_id)->first()->id;
 
         $api = new ApiService;
         $page = $api->storeApiPage($data);

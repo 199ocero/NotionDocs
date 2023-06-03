@@ -10,11 +10,10 @@ use App\Repositories\Notion\Database\ImportDatabaseRepository;
 
 class ImportDatabaseService
 {
-    public function importDatabase()
+    public function importDatabase($result)
     {
-        $results = $this->getDatabase();
         $import = new ImportDatabaseRepository;
-        $import->importDatabase($results);
+        $import->importDatabase($result);
     }
 
     /**
@@ -24,7 +23,7 @@ class ImportDatabaseService
      * @throws Some_Exception_Class description of exception
      * @return Database
      */
-    private function getDatabase()
+    public function getDatabase()
     {
         $token = new TokenService(new TokenRepository);
         $notion = Notion::create($token->getToken());

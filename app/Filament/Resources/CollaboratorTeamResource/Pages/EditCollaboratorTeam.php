@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\Member;
 use App\Models\Settings;
 use Filament\Pages\Actions;
+use App\Models\NotionDatabase;
 use App\Services\Notion\Api\ApiService;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\CollaboratorTeamResource;
@@ -73,6 +74,8 @@ class EditCollaboratorTeam extends EditRecord
                 unset($data[$key]);
             }
         }
+
+        $data['notion_database_id'] = NotionDatabase::where('user_id', $member->invited_by_id)->first()->id;
         
         $api = new ApiService;
         $api->updateApiPage($data);

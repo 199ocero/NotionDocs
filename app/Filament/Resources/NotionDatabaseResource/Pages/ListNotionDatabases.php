@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\NotionDatabaseResource\Pages;
 
+use Filament\Forms;
+use App\Models\User;
 use App\Models\NotionToken;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -22,10 +24,33 @@ class ListNotionDatabases extends ListRecords
                 ->label('Import Notion Database')
                 ->icon('heroicon-o-cloud-download')
                 ->color('primary')
-                ->action('importDatabase')
+                ->action(function (array $data){
+                    $database = new ImportDatabaseService;
+                    $database->importDatabase($data);
+                })
+                ->form([
+                    Forms\Components\Select::make('database')
+                        ->label('Database')
+                        ->options(function () {
+                            $database = new ImportDatabaseService;
+                            $results = $database->getDatabase();
+
+                            $resultData = collect();
+
+                            foreach ($results->results as $result) {
+                                $id = $result->id;
+                                $titlePlainText = $result->title[0]->plainText;
+                                
+                                $resultData->put($id.','.$titlePlainText, $titlePlainText);
+                            }
+                            
+                            return $resultData->toArray();
+                        })
+                        ->searchable()
+                        ->required(),
+                ])
                 ->requiresConfirmation()
                 ->modalHeading('Import Notion Database')
-                ->modalSubheading('This will import all databases from Notion, automatically updating any that require modification, and removing any records that do not exist in our current database.')
                 ->modalButton('Yes, import database')
                 ->modalWidth('2xl')
         ] : [
@@ -39,12 +64,6 @@ class ListNotionDatabases extends ListRecords
                 ->requiresConfirmation()
         ];
 
-    }
-
-    public function importDatabase(): void
-    {
-        $database = new ImportDatabaseService;
-        $database->importDatabase();
     }
 
     protected function getTableQuery(): Builder

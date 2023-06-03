@@ -13,7 +13,6 @@ class NotionDatabase extends Model
     protected $fillable = [
         'user_id',
         'database_id',
-        'title',
-        'created_time',
+        'title'
     ];
 }

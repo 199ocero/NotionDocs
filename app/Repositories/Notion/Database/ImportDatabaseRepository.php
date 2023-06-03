@@ -7,35 +7,31 @@ use Filament\Notifications\Notification;
 
 class ImportDatabaseRepository
 {
-    public function importDatabase($results)
+    public function importDatabase($result)
     {
+        $databaseArray = explode(',', $result['database']);
+
+        $id = trim($databaseArray[0]); // Trim to remove any leading/trailing spaces
+        $titlePlainText = trim($databaseArray[1]); // Trim to remove any leading/trailing spaces
+
+        $database = NotionDatabase::where('database_id', $id)->first();
+        
         $existingDatabaseIds = [];
-        $databaseNames = [];
-        foreach ($results->results as $result) {
-            $id = $result->id;
-            $titlePlainText = $result->title[0]->plainText;
-            $createdTime = $result->createdTime->format('Y-m-d H:i:s');
-
-            $database = NotionDatabase::where('database_id', $id)->first();
-
-            if ($database) {
-                $database->user_id = auth()->user()->id;
-                $database->title = $titlePlainText;
-                $database->created_time = $createdTime;
-                $database->save();
-                $existingDatabaseIds[] = $id;
-                $databaseNames[] = $titlePlainText;
-            }else{
-                NotionDatabase::create([
-                    'user_id' => auth()->user()->id,
-                    'database_id' => $id,
-                    'title' => $titlePlainText,
-                    'created_time' => $createdTime
-                ]);
-                $existingDatabaseIds[] = $id;
-                $databaseNames[] = $titlePlainText;
-            }
+        
+        if ($database) {
+            $database->user_id = auth()->user()->id;
+            $database->title = $titlePlainText;
+            $database->save();
+            $existingDatabaseIds[] = $id;
+        } else {
+            NotionDatabase::create([
+                'user_id' => auth()->user()->id,
+                'database_id' => $id,
+                'title' => $titlePlainText
+            ]);
+            $existingDatabaseIds[] = $id;
         }
+
         $this->deleteMissingDatabase($existingDatabaseIds);
 
         Notification::make() 
