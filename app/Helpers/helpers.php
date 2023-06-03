@@ -38,9 +38,16 @@ if(!function_exists('getTeam')){
 if(!function_exists('getHeaders')){
     function getHeaders()
     {  
-        $userId = auth()->user()->id;
-        $team = Team::where('user_id', $userId)->first();
-        $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+
+        if($member && auth()->user()->hasRole('collaborator')){
+            $team = Team::where('user_id', $member->invited_by_id)->first();
+            $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        }else{
+            $team = Team::where('user_id', auth()->user()->id)->first();
+            $headers = Settings::where('team_id', $team->id ?? 0)->first();
+        }
+
         return $headers;
     }
 }
