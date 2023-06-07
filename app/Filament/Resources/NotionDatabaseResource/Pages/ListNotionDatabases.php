@@ -39,10 +39,33 @@ class ListNotionDatabases extends ListRecords
                             foreach ($results->results as $result) {
                                 $id = $result->id;
                                 $titlePlainText = $result->title[0]->plainText;
-                                
-                                $resultData->put($id.','.$titlePlainText, $titlePlainText);
+                                $databaseProperties = $result->properties;
+
+                                $properties = [
+                                    'Title',
+                                    'Method',
+                                    'Description',
+                                    'Created Time'
+                                ];
+
+                                if (count(array_intersect($properties, array_keys($databaseProperties))) === count($properties)) {
+                                    $databaseProperties = $result->properties;
+                                    
+                                    if(in_array('Method', array_keys($databaseProperties))) {
+                                        $methodProperty = $result->properties['Method']->options;
+                                        $options = [];
+                                        foreach ($methodProperty as $option) {
+                                            $options[] = $option->name.'-'.$option->color->value;
+                                        }
+                                    }
+                                    
+                                } else {
+                                    $databaseProperties = [];
+                                    $options = [];
+                                }
+
+                                $resultData->put($id.','.$titlePlainText.',['.implode('|', array_keys($databaseProperties)).'],['.implode('|', $options).']', $titlePlainText);
                             }
-                            
                             return $resultData->toArray();
                         })
                         ->searchable()
