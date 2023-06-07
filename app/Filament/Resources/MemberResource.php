@@ -21,6 +21,8 @@ class MemberResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $activeNavigationIcon = 'heroicon-s-users';
+
     protected static ?string $navigationGroup = 'Team';
 
     protected static ?string $navigationLabel = 'My Team';

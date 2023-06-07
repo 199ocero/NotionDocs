@@ -21,6 +21,8 @@ class CollaboratorResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
+    protected static ?string $activeNavigationIcon = 'heroicon-s-user-group';
+
     protected static ?string $navigationGroup = 'Team';
 
     protected static ?string $navigationLabel = 'Collaborator';

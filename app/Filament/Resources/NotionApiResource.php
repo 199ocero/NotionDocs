@@ -30,6 +30,8 @@ class NotionApiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-code';
 
+    protected static ?string $activeNavigationIcon = 'heroicon-s-code';
+
     protected static ?string $navigationGroup = 'Notion';
 
     protected static ?int $navigationSort = 2;

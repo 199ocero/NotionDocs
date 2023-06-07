@@ -19,6 +19,8 @@ class NotionDatabaseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
 
+    protected static ?string $activeNavigationIcon = 'heroicon-s-sparkles';
+
     protected static ?string $navigationGroup = 'Notion';
 
     protected static ?int $navigationSort = 1;
