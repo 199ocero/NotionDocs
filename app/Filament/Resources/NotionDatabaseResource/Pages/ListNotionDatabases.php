@@ -73,6 +73,7 @@ class ListNotionDatabases extends ListRecords
                 ])
                 ->requiresConfirmation()
                 ->modalHeading('Import Notion Database')
+                ->modalSubheading("Are you certain about importing this database? If you proceed, the existing database in the system will be overwritten. If you have any data stored in the current database, please ensure that you move all the pages to the newly imported database in your Notion workspace.")
                 ->modalButton('Yes, import database')
                 ->modalWidth('2xl')
         ] : [

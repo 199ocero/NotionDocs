@@ -37,22 +37,19 @@ class ImportDatabaseRepository
 
         if (count(array_intersect($properties, $propertiesArray)) === count($properties)){
             if (count(array_intersect($options, $optionsArray)) === count($options)){
-                $database = NotionDatabase::where('database_id', $id)->first();
-        
-                $existingDatabaseIds = [];
+                
+                $database = NotionDatabase::where('user_id', auth()->user()->id)->first();
                 
                 if ($database) {
                     $database->user_id = auth()->user()->id;
                     $database->title = $titlePlainText;
                     $database->save();
-                    $existingDatabaseIds[] = $id;
                 } else {
                     NotionDatabase::create([
                         'user_id' => auth()->user()->id,
                         'database_id' => $id,
                         'title' => $titlePlainText
                     ]);
-                    $existingDatabaseIds[] = $id;
                 }
 
                 Notification::make() 
