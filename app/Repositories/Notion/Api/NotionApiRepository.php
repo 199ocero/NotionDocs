@@ -26,100 +26,104 @@ class NotionApiRepository
 {
     public function storeApiPage($data)
     {
-        $token = new TokenRepository;
-        $notion = Notion::create($token->token());
+        try{
+            $token = new TokenRepository;
+            $notion = Notion::create($token->token());
 
-        $database = NotionDatabase::find($data['notion_database_id']);
-        $databaseId = $database->database_id;
-        $parent = PageParent::database($databaseId);
+            $database = NotionDatabase::find($data['notion_database_id']);
+            $databaseId = $database->database_id;
+            $parent = PageParent::database($databaseId);
 
-        $title = Title::fromString($data['title']);
-        $description = RichTextProperty::fromString($data['description']);
-        $method = Select::fromName($data['method']);
+            $title = Title::fromString($data['title']);
+            $description = RichTextProperty::fromString($data['description']);
+            $method = Select::fromName($data['method']);
 
-        $page = Page::create($parent)
-            ->addProperty("Title", $title)
-            ->addProperty("Method", $method)
-            ->addProperty("Description", $description);
+            $page = Page::create($parent)
+                ->addProperty("Title", $title)
+                ->addProperty("Method", $method)
+                ->addProperty("Description", $description);
 
-        $params = [];
-        
-        if($data['params']){
-            $params[] = Heading2::fromString("Parameters");
-            foreach ($data['params'] as $parameter) {
-                $codeLine[] = (RichText::fromString($parameter['key'])->color(Color::Red));
-                $codeLine[] = (RichText::fromString(" - " . $parameter['data_type']));
-                $codeLine[] = (RichText::fromString(" (" . $parameter['parameter_type']. ")"));
-                $codeLine[] = RichText::fromString("\n");
+            $params = [];
+            
+            if($data['params']){
+                $params[] = Heading2::fromString("Parameters");
+                foreach ($data['params'] as $parameter) {
+                    $codeLine[] = (RichText::fromString($parameter['key'])->color(Color::Red));
+                    $codeLine[] = (RichText::fromString(" - " . $parameter['data_type']));
+                    $codeLine[] = (RichText::fromString(" (" . $parameter['parameter_type']. ")"));
+                    $codeLine[] = RichText::fromString("\n");
+                }
+                array_pop($codeLine);
+                $params[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Bash);
+            }else{
+                $params[] = Heading2::fromString("Parameters");
+                $params[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
             }
-            array_pop($codeLine);
-            $params[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Bash);
-        }else{
-            $params[] = Heading2::fromString("Parameters");
-            $params[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
-        }
 
-        $body = [];
+            $body = [];
 
-        if($data['body']){
-            $body[] = Heading2::fromString("Request Body");
-            $codeLine = [];
+            if($data['body']){
+                $body[] = Heading2::fromString("Request Body");
+                $codeLine = [];
 
-            $decodedData = json_decode($data['body'], true);
+                $decodedData = json_decode($data['body'], true);
 
-            $codeLine[] = RichText::fromString("{\n");
-            $codeLine = $this->handleJsonData($decodedData, $codeLine, 1);
-            $codeLine[] = RichText::fromString("}");
+                $codeLine[] = RichText::fromString("{\n");
+                $codeLine = $this->handleJsonData($decodedData, $codeLine, 1);
+                $codeLine[] = RichText::fromString("}");
 
-            $body[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Json);
-        }else{
-            $body[] = Heading2::fromString("Request Body");
-            $body[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
-        }
+                $body[] = Code::create()->changeText(...$codeLine)->changeLanguage(CodeLanguage::Json);
+            }else{
+                $body[] = Heading2::fromString("Request Body");
+                $body[] = Code::create()->changeText(RichText::fromString('//No parameters')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
+            }
+            
+            if(auth()->user()->hasRole('collaborator')){
+                $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
+                $team = Team::where('user_id', $member->invited_by_id)->first();
+                $settings = Settings::where('team_id', $team->id ?? 0)->first();
+            }else{
+                $team = Team::where('user_id', auth()->user()->id)->first();
+                $settings = Settings::where('team_id', $team->id ?? 0)->first();
+            }
+            
+            $headers = [];
         
-        if(auth()->user()->hasRole('collaborator')){
-            $member = Member::where('invited_id', auth()->user()->id)->where('status', Member::ACCEPTED)->first();
-            $team = Team::where('user_id', $member->invited_by_id)->first();
-            $settings = Settings::where('team_id', $team->id ?? 0)->first();
-        }else{
-            $team = Team::where('user_id', auth()->user()->id)->first();
-            $settings = Settings::where('team_id', $team->id ?? 0)->first();
-        }
-        
-        $headers = [];
-    
-        if($data['headers'] && array_search(true, $data['headers']) !== false){
-            $headers[] = Heading2::fromString("Headers");
+            if($data['headers'] && array_search(true, $data['headers']) !== false){
+                $headers[] = Heading2::fromString("Headers");
 
-            foreach ($data['headers'] as $key => $value) {
-                if ($value === true) {
-                    foreach ($settings->headers as $header) {
-                        if(snakeCase($header['key']) === $key){
-                            $codeLineHeader[] = (RichText::fromString($header['key'])->color(Color::Red));
-                            $codeLineHeader[] = (RichText::fromString(" - " . $header['value']));
-                            $codeLineHeader[] = RichText::fromString("\n");
+                foreach ($data['headers'] as $key => $value) {
+                    if ($value === true) {
+                        foreach ($settings->headers as $header) {
+                            if(snakeCase($header['key']) === $key){
+                                $codeLineHeader[] = (RichText::fromString($header['key'])->color(Color::Red));
+                                $codeLineHeader[] = (RichText::fromString(" - " . $header['value']));
+                                $codeLineHeader[] = RichText::fromString("\n");
+                            }
                         }
-                    }
-                }   
+                    }   
+                }
+                array_pop($codeLineHeader);
+                $headers[] = Code::create()->changeText(...$codeLineHeader)->changeLanguage(CodeLanguage::Bash);
+            }else{
+                $headers[] = Heading2::fromString("Headers");
+                $headers[] = Code::create()->changeText(RichText::fromString('//No headers')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
             }
-            array_pop($codeLineHeader);
-            $headers[] = Code::create()->changeText(...$codeLineHeader)->changeLanguage(CodeLanguage::Bash);
-        }else{
-            $headers[] = Heading2::fromString("Headers");
-            $headers[] = Code::create()->changeText(RichText::fromString('//No headers')->color(Color::Gray))->changeLanguage(CodeLanguage::Bash);
+
+            $content = [
+                ...$headers,
+                Heading2::fromString("Endpoint"),
+                Code::create()->changeText(RichText::fromString(generateUrl($settings->base_url, $settings->version, $data['endpoint']))->color(Color::Red))->changeLanguage(CodeLanguage::Bash),
+                ...$params,
+                ...$body
+            ];
+
+            $page = $notion->pages()->create($page, $content);
+
+            return $page;
+        }catch (ApiException $exception) {
+            return false;
         }
-
-        $content = [
-            ...$headers,
-            Heading2::fromString("Endpoint"),
-            Code::create()->changeText(RichText::fromString(generateUrl($settings->base_url, $settings->version, $data['endpoint']))->color(Color::Red))->changeLanguage(CodeLanguage::Bash),
-            ...$params,
-            ...$body
-        ];
-
-        $page = $notion->pages()->create($page, $content);
-
-        return $page;
     }
 
     public function updateApiPage($data)
