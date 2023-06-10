@@ -42,6 +42,7 @@ class ImportDatabaseRepository
                 
                 if ($database) {
                     $database->user_id = auth()->user()->id;
+                    $database->database_id = $id;
                     $database->title = $titlePlainText;
                     $database->save();
                 } else {
