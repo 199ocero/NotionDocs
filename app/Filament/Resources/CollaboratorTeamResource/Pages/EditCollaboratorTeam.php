@@ -76,9 +76,19 @@ class EditCollaboratorTeam extends EditRecord
         $data['notion_database_id'] = NotionDatabase::where('user_id', $member->invited_by_id)->first()->id;
         
         $api = new ApiService;
-        $api->updateApiPage($data);
-    
-        return $data;
+        $result = $api->updateApiPage($data);
+        if($result === false){
+            Notification::make()
+            ->danger()
+            ->title('Oops! Something went wrong')
+            ->body("The page you tried to update can't be found. To solve this problem, you can either restore the page in your Notion or delete this page here and create a new one.")
+            ->persistent()
+            ->send();
+            
+            $this->halt();
+        }else{
+            return $data;
+        }
     }
 
     protected function getRedirectUrl(): string

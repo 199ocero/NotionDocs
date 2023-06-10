@@ -17,6 +17,7 @@ use Notion\Pages\PageParent;
 use App\Models\NotionDatabase;
 use Notion\Blocks\CodeLanguage;
 use Notion\Pages\Properties\Title;
+use Notion\Exceptions\ApiException;
 use Notion\Pages\Properties\Select;
 use Notion\Pages\Properties\RichTextProperty;
 use App\Repositories\Notion\Token\TokenRepository;
@@ -123,59 +124,63 @@ class NotionApiRepository
 
     public function updateApiPage($data)
     {
-        $token = new TokenRepository;
-        $notion = Notion::create($token->token());
+        try{
+            $token = new TokenRepository;
+            $notion = Notion::create($token->token());
 
-        $pageBlock = NotionBlock::where('page_id', $data['page_id'])->first();
-        $blocks = $notion->blocks()->findChildren($pageBlock->page_id);
+            $pageBlock = NotionBlock::where('page_id', $data['page_id'])->first();
+            $blocks = $notion->blocks()->findChildren($pageBlock->page_id);
 
-        $notionPage = NotionApi::where('page_id', $data['page_id'])->first();
+            $notionPage = NotionApi::where('page_id', $data['page_id'])->first();
 
-        // update page
-        if($notionPage->title !== $data['title'] || $notionPage->description !== $data['description'] || $notionPage->method !== $data['method']){
-            
-            $title = Title::fromString($data['title']);
-            $description = RichTextProperty::fromString($data['description']);
-            $method = Select::fromName($data['method']);
-
-            $page = $notion->pages()->find($notionPage->page_id);
-            $page = $page->addProperty("Title", $title)
-                        ->addProperty("Method", $method)
-                        ->addProperty("Description", $description);
-            
-            $notion->pages()->update($page);
-        }
-
-        // update page blocks
-        foreach ($blocks as $block) {
-            $blockId = $block->metadata()->id;
-            // Perform your desired operations with $blockId
-            
-            switch ($blockId) {
-                case $pageBlock->header_block_id:
-                    // Code to execute when $blockId matches $pageBlock->header_block_id
-                    $this->headerBlock($notionPage, $data, $block, $notion);
-                    break;
+            // update page
+            if($notionPage->title !== $data['title'] || $notionPage->description !== $data['description'] || $notionPage->method !== $data['method']){
                 
-                case $pageBlock->endpoint_block_id:
-                    // Code to execute when $blockId matches $pageBlock->endpoint_block_id
-                    $this->endpointBlock($notionPage, $data, $block, $notion);
-                    break;
+                $title = Title::fromString($data['title']);
+                $description = RichTextProperty::fromString($data['description']);
+                $method = Select::fromName($data['method']);
+
+                $page = $notion->pages()->find($notionPage->page_id);
+                $page = $page->addProperty("Title", $title)
+                            ->addProperty("Method", $method)
+                            ->addProperty("Description", $description);
                 
-                case $pageBlock->parameters_block_id:
-                    // Code to execute when $blockId matches $pageBlock->parameters_block_id
-                    $this->parametersBlock($notionPage, $data, $block, $notion);
-                    break;
-                
-                case $pageBlock->body_block_id:
-                    // Code to execute when $blockId matches $pageBlock->body_block_id
-                    $this->bodyBlock($notionPage, $data, $block, $notion);
-                    break;
-                
-                default:
-                    // Code to execute when $blockId doesn't match any of the cases above
-                    break;
+                $notion->pages()->update($page);
             }
+
+            // update page blocks
+            foreach ($blocks as $block) {
+                $blockId = $block->metadata()->id;
+                // Perform your desired operations with $blockId
+                
+                switch ($blockId) {
+                    case $pageBlock->header_block_id:
+                        // Code to execute when $blockId matches $pageBlock->header_block_id
+                        $this->headerBlock($notionPage, $data, $block, $notion);
+                        break;
+                    
+                    case $pageBlock->endpoint_block_id:
+                        // Code to execute when $blockId matches $pageBlock->endpoint_block_id
+                        $this->endpointBlock($notionPage, $data, $block, $notion);
+                        break;
+                    
+                    case $pageBlock->parameters_block_id:
+                        // Code to execute when $blockId matches $pageBlock->parameters_block_id
+                        $this->parametersBlock($notionPage, $data, $block, $notion);
+                        break;
+                    
+                    case $pageBlock->body_block_id:
+                        // Code to execute when $blockId matches $pageBlock->body_block_id
+                        $this->bodyBlock($notionPage, $data, $block, $notion);
+                        break;
+                    
+                    default:
+                        // Code to execute when $blockId doesn't match any of the cases above
+                        break;
+                }
+            }
+        } catch (ApiException $exception) {
+            return false;
         }
         
     }
