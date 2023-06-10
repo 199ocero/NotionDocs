@@ -41,11 +41,11 @@ class CreateNotionApi extends CreateRecord
         $page = $api->storeApiPage($data);
         if($page === false){
             Notification::make()
-            ->danger()
-            ->title('Oops! Something went wrong')
-            ->body("The database you tried to store this page can't be found. To solve this problem, you can either restore the database in your Notion or you can import new database.")
-            ->persistent()
-            ->send();
+                ->danger()
+                ->title('Oops! Something went wrong')
+                ->body("The database you tried to store this page can't be ***found***. To solve this problem, you can either restore the database in your ***Notion*** or you can import new database. There is also a possibility that you remove the ***integration*** from your Notion.")
+                ->persistent()
+                ->send();
             
             $this->halt();
         }else{

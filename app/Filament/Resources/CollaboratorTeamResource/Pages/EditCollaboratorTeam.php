@@ -79,11 +79,11 @@ class EditCollaboratorTeam extends EditRecord
         $result = $api->updateApiPage($data);
         if($result === false){
             Notification::make()
-            ->danger()
-            ->title('Oops! Something went wrong')
-            ->body("The page you tried to update can't be found. To solve this problem, you can either restore the page in your Notion or delete this page here and create a new one.")
-            ->persistent()
-            ->send();
+                ->danger()
+                ->title('Oops! Something went wrong')
+                ->body("The page you tried to update can't be found. To solve this problem, you can either restore the page in your Notion or delete this page here and create a new one. There is also a possibility that you remove the ***integration*** from your Notion.")
+                ->persistent()
+                ->send();
             
             $this->halt();
         }else{
