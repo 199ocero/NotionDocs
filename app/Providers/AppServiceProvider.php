@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Notion;
 use Filament\Facades\Filament;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Filament\Navigation\UserMenuItem;
 use Illuminate\Support\ServiceProvider;
@@ -41,5 +42,9 @@ class AppServiceProvider extends ServiceProvider
 
             Filament::registerViteTheme('resources/css/app.css');
         });
+
+        Filament::pushMeta([
+            new HtmlString('<link rel="icon" href="'.asset("favicon.png").'" type="image/png">')
+        ]);
     }
 }
