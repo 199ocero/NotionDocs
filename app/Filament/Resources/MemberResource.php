@@ -83,6 +83,7 @@ class MemberResource extends Resource
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('reinvite')
+                    ->label('Re-invite')
                     ->action(function (Member $record): void {
                         $inviteAccept = Member::where('invited_id', $record->invited_id)
                                             ->where('status', Member::ACCEPTED)
