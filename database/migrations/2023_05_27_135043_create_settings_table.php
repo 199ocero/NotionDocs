@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('team_id');
             $table->string('base_url');
-            $table->string('version');
+            $table->string('version')->nullable();
             $table->json('headers');
             $table->timestamps();
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade'); 

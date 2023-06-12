@@ -34,8 +34,7 @@ class ListNotionApis extends ListRecords
                         });
 
         $version = tap(Forms\Components\TextInput::make('version')
-                    ->label('Version')
-                    ->required()
+                    ->label('Version (Optional)')
                     ->placeholder('e.g v1'),
                     function ($input) use ($record) {
                         if ($record) {
