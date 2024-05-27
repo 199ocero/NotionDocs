@@ -20,6 +20,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->longText('two_factor_secret')->nullable();
+            $table->longText('two_factor_recovery_codes')->nullable();
+            $table->dateTime('two_factor_confirmed_at')->nullable();
             $table->timestamps();
         });
     }

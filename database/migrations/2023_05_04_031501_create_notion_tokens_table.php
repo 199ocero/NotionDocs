@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('notion_tokens', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->text('token')->unique();
+            $table->longText('token');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
